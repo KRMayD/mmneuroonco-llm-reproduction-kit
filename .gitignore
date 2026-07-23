@@ -1,0 +1,15 @@
+# Downloaded data, model weights, checkpoints, and experiment outputs.
+assets/
+models/
+runs/
+*.ckpt
+*.pt
+*.pth
+*.bin
+*.safetensors
+
+# Python and local configuration artifacts.
+__pycache__/
+*.py[cod]
+*.env
+.cache/

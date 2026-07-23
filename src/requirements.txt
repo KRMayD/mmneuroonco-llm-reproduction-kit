@@ -1,0 +1,29 @@
+# Core runtime
+torch
+torchvision
+pytorch-lightning
+transformers
+peft
+accelerate
+
+# Vision / model utilities
+Pillow
+timm
+omegaconf
+nystrom-attention
+
+# Tokenizer / model loading helpers
+sentencepiece
+ftfy
+huggingface-hub
+safetensors
+
+# Evaluation helpers imported by the release code
+nltk
+rouge-score
+tqdm
+
+# Optional:
+# If open_clip is not installed, set BIOMEDCLIP_OPEN_CLIP_SRC to a vendored open_clip/src directory.
+# Otherwise you can install:
+# open-clip-torch

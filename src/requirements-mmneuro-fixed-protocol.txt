@@ -1,0 +1,20 @@
+# Python 3.12.7 was used for the reference run.
+# Install a PyTorch build compatible with the target server's existing NVIDIA
+# driver and CUDA runtime first. Do not replace system CUDA or GPU drivers.
+torch==2.4.1
+torchvision==0.19.1
+pytorch-lightning==2.6.1
+transformers==4.57.6
+peft==0.18.1
+accelerate==0.34.2
+timm==1.0.25
+huggingface-hub==0.36.2
+safetensors==0.4.5
+Pillow==12.1.1
+omegaconf==2.3.0
+nystrom-attention==0.0.14
+sentencepiece==0.2.1
+ftfy==6.3.1
+pandas==3.0.1
+numpy==1.26.4
+tqdm
