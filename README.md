@@ -1,9 +1,11 @@
 # MM-NeuroOnco LLM Fixed-Protocol Reproduction Kit
 
-This repository reproduces the MM-NeuroOnco **Closed-VQA** comparison where
-the upstream vision encoder is the only experimental variable. It contains no
-medical images, MM-NeuroOnco annotations, model weights, training outputs, or
-GPU runtime libraries.
+This repository evaluates a **newly trained GMPO upstream vision encoder** on
+MM-NeuroOnco Closed-VQA while keeping every downstream condition fixed. The
+BiomedCLIP baseline, CLIP post-training, and CLIPrefine post-training
+checkpoints are fixed controls; only the GMPO checkpoint is replaced by the new
+candidate. This repository contains no medical images, MM-NeuroOnco
+annotations, model weights, training outputs, or GPU runtime libraries.
 
 ## What Is Fixed
 
@@ -13,7 +15,7 @@ GPU runtime libraries.
 | Closed-VQA evaluation | 3,190 questions over 1,000 images |
 | Q-Former initialization | `dmis-lab/biobert-v1.1` |
 | Generative model | `Qwen/Qwen3-0.6B` |
-| Vision encoder behavior | frozen |
+| Vision encoder behavior | frozen; only the supplied GMPO checkpoint is new |
 | Visual L2 normalization | disabled |
 | Batch size | 8 per independent GPU job |
 | Epochs | 3 |
@@ -50,12 +52,13 @@ in the config file.
 | Baseline BiomedCLIP checkpoint | frozen baseline visual encoder |
 | CLIP checkpoint | frozen CLIP post-trained visual encoder |
 | CLIPrefine checkpoint | frozen CLIPrefine post-trained visual encoder |
-| GMPO SD neg100 checkpoint | frozen GMPO visual encoder |
+| New GMPO checkpoint | the newly trained GMPO visual encoder to evaluate |
 
 Checkpoint filenames and SHA256 values are listed in
-[`artifacts/vision_checkpoints.tsv`](artifacts/vision_checkpoints.tsv). The
-canonical GMPO file can be downloaded from the `checkpoints/` directory of the
-Hugging Face dataset `KRMayD/Brain_MRI_Dataset`.
+[`artifacts/vision_checkpoints.tsv`](artifacts/vision_checkpoints.tsv). Before
+running, replace the `gmpo_candidate` row's placeholder filename and SHA256
+with the new GMPO checkpoint. The historical GMPO SD neg100 row is retained
+only as an optional reference, not as the default experiment target.
 
 ## Quick Start
 
@@ -70,7 +73,8 @@ PYTHONNOUSERSITE=1 /path/to/python src/scripts/prepare_mmneuro_official_vqa.py \
   --train-variant open_closed_nocot \
   --seed 42
 
-# Fill absolute paths, including the four vision checkpoint paths.
+# Fill absolute paths. BASELINE_CKPT, CLIP_CKPT, and CLIPREFINE_CKPT are fixed
+# controls; GMPO_CKPT must point to the newly trained GMPO checkpoint.
 cp src/configs/mmneuro_fixed_protocol.env.example /data/mmneuro.env
 
 # Edit /data/mmneuro.env, then run all four one-GPU jobs and their evaluations.
@@ -94,5 +98,7 @@ working PyTorch CUDA installation.
 ## Scope
 
 This kit runs downstream LLM adaptation and Closed-VQA evaluation only. It does
-not train the upstream CLIP, CLIPrefine, or GMPO encoders and therefore does not
-require Figshare masks, SD-negative images, DPO CSVs, SAM, or segmentation code.
+not train the upstream CLIP, CLIPrefine, or GMPO encoders. Train the new GMPO
+encoder separately, verify that it is OpenCLIP/BiomedCLIP-compatible, and then
+provide it through `GMPO_CKPT`. Figshare masks, SD-negative images, DPO CSVs,
+SAM, and segmentation code are not required at this downstream stage.

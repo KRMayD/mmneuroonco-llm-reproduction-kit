@@ -1,9 +1,11 @@
 # MM-NeuroOnco Fixed Downstream Protocol
 
-This document reproduces the Brain MRI MM-NeuroOnco Closed-VQA comparison in
-which **only the frozen upstream vision encoder changes**. Do not use the
-legacy Brain MRI runner directly: it contains machine-specific paths and its
-normalization default is unsuitable for this protocol.
+This document evaluates a **new GMPO upstream checkpoint** in the Brain MRI
+MM-NeuroOnco Closed-VQA comparison. The BiomedCLIP baseline, CLIP, and
+CLIPrefine checkpoints remain fixed controls; the new GMPO checkpoint is the
+only upstream input that changes. Do not use the legacy Brain MRI runner
+directly: it contains machine-specific paths and its normalization default is
+unsuitable for this protocol.
 
 ## Fixed components
 
@@ -13,7 +15,7 @@ normalization default is unsuitable for this protocol.
 | Evaluation | MM-NeuroOnco Closed-VQA, 3,190 questions / 1,000 images |
 | Q-Former initialization | `dmis-lab/biobert-v1.1` |
 | Language model | `Qwen/Qwen3-0.6B` |
-| Vision encoder behavior | frozen; only checkpoint changes |
+| Vision encoder behavior | frozen; only the supplied GMPO candidate changes |
 | Visual feature normalization | disabled (`NORMALIZE_VISUAL_FEATURES=0`) |
 | Precision | BF16 mixed precision |
 | Per-model batch size | 8 |
@@ -35,11 +37,12 @@ by default; this is not four-GPU DDP for one model.
    extracted.
 3. Local Hugging Face snapshots for `dmis-lab/biobert-v1.1` and
    `Qwen/Qwen3-0.6B`.
-4. Four vision checkpoints: baseline BiomedCLIP, CLIP post-training,
-   CLIPrefine post-training, and GMPO SD neg100.
+4. Three fixed control checkpoints: baseline BiomedCLIP, CLIP post-training,
+   and CLIPrefine post-training; plus the newly trained GMPO checkpoint.
 
-The canonical GMPO SD neg100 checkpoint has SHA256
-`32b50483ada26e9323739f7fe72be32ca8e08d46a348cf9d7093acf079535843`.
+Record the filename and SHA256 of the new GMPO checkpoint in
+`artifacts/vision_checkpoints.tsv` before launching the experiment. The
+historical GMPO SD neg100 SHA256 is retained there as an optional reference.
 
 ## Data preparation
 
@@ -83,6 +86,7 @@ path, per-option predictions, per-model summaries, `protocol.json`, and
 
 ## Scope boundary
 
-This protocol does not retrain CLIP, CLIPrefine, or GMPO upstream encoders.
-It uses supplied checkpoints only. Therefore no Figshare masks, SD negative
+This protocol does not retrain CLIP, CLIPrefine, or GMPO upstream encoders. It
+uses supplied checkpoints only. Train the new GMPO upstream model separately,
+then provide it through `GMPO_CKPT`. Therefore no Figshare masks, SD-negative
 images, DPO CSV, or segmentation pipeline is required for this LLM experiment.
